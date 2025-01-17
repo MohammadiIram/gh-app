@@ -39,6 +39,7 @@ jobs:
         with:
           application_id: ${{ secrets.APP_ID }}
           application_private_key: ${{ secrets.APP_KEY }}
+          permissions: "actions:write"
 
       - name: Fetch and Install Dependencies
         run: |
@@ -148,20 +149,12 @@ jobs:
             git config user.email "github-actions@users.noreply.github.com"
 
             if git diff --staged --quiet; then
-            echo "No changes to commit for branch $TARGET_BRANCH."
-          else
-            git commit -m "Sync Tekton files from $SOURCE_BRANCH to $TARGET_BRANCH with updated versioning"
-          
-            # Push changes using the token
-            git push https://${GIT_TOKEN}@${repo_url#https://} "$TARGET_BRANCH"
-            
-            if [ $? -eq 0 ]; then
-              echo "Pushed changes to branch $TARGET_BRANCH in repository $repo_url."
+              echo "No changes to commit for branch $TARGET_BRANCH."
             else
-              echo "Error: Failed to push changes to branch $TARGET_BRANCH."
-              exit 1
+              git commit -m "Sync Tekton files from $SOURCE_BRANCH to $TARGET_BRANCH with updated versioning"
+              git push origin "$TARGET_BRANCH"
+              echo "Pushed changes to branch $TARGET_BRANCH in $repo_name."
             fi
-          fi
 
             # Clean up
             cd ..

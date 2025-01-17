@@ -83,6 +83,9 @@ jobs:
             # Configure Git to use the App token for authentication
             git config --global url."https://${GIT_TOKEN}@github.com/".insteadOf "https://github.com/"
 
+            # Ensure Git doesn't prompt for the password
+            export GIT_ASKPASS="echo $GIT_TOKEN"
+
             # Check out the source branch
             if ! git checkout "$SOURCE_BRANCH"; then
               echo "Error: Source branch $SOURCE_BRANCH does not exist in $repo_name."

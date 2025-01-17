@@ -83,7 +83,9 @@ jobs:
 
             # Configure Git to use the App token for authentication
             #git config --global url."https://${GIT_TOKEN}@github.com/".insteadOf "https://github.com/"
-            git config --global url.https://${{ GIT_TOKEN }}@github.com/.insteadOf https://github.com/
+            #git config --global url.https://${GIT_TOKEN}@github.com/.insteadOf https://github.com/
+            git config --global url."https://${GIT_TOKEN}@github.com".insteadOf "https://github.com/"
+
 
             # Ensure Git doesn't prompt for the password
             export GIT_ASKPASS="echo $GIT_TOKEN"

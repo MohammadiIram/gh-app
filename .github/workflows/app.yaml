@@ -151,6 +151,7 @@ jobs:
               echo "No changes to commit for branch $TARGET_BRANCH."
             else
               git commit -m "Sync Tekton files from $SOURCE_BRANCH to $TARGET_BRANCH with updated versioning"
+              export GIT_ASKPASS="echo $GIT_TOKEN"
               git push origin "$TARGET_BRANCH"
               echo "Pushed changes to branch $TARGET_BRANCH in $repo_name."
             fi

@@ -148,30 +148,20 @@ jobs:
             git config user.email "github-actions@users.noreply.github.com"
 
             if git diff --staged --quiet; then
-              echo "No changes to commit for branch $TARGET_BRANCH."
+            echo "No changes to commit for branch $TARGET_BRANCH."
+          else
+            git commit -m "Sync Tekton files from $SOURCE_BRANCH to $TARGET_BRANCH with updated versioning"
+          
+            # Push changes using the token
+            git push https://${GIT_TOKEN}@${repo_url#https://} "$TARGET_BRANCH"
+            
+            if [ $? -eq 0 ]; then
+              echo "Pushed changes to branch $TARGET_BRANCH in repository $repo_url."
             else
-              git commit -m "Sync Tekton files from $SOURCE_BRANCH to $TARGET_BRANCH with updated versioning"
-
-              repo_url=${repo_url%/}
-
-              # Extract organization and repository name
-              org_repo_name=$(echo "$repo_url" | sed -E 's|https://github\.com/([^/]+/[^/]+)\.git$|\1|')
-            
-              # Validate the parsed organization and repo name
-              if [[ -z "$org_repo_name" ]]; then
-                echo "Error: Failed to extract organization and repository name from URL: $repo_url"
-                exit 1
-              fi
-            
-              # Push changes using the correct format
-              git push https://${GIT_TOKEN}@github.com/$org_repo_name "$TARGET_BRANCH"
-              if [ $? -ne 0 ]; then
-                echo "Error: Failed to push changes to branch $TARGET_BRANCH."
-                exit 1
-              else
-                echo "Pushed changes to branch $TARGET_BRANCH in $org_repo_name."
-              fi
+              echo "Error: Failed to push changes to branch $TARGET_BRANCH."
+              exit 1
             fi
+          fi
 
             # Clean up
             cd ..

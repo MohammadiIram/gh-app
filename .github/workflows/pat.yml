@@ -1,0 +1,62 @@
+name: version
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: 'Source branch to copy Tekton files from'
+        required: true
+        default: 'rhoai-x.y'
+      target_branch:
+        description: 'Target branch to copy Tekton files to'
+        required: true
+        default: 'rhoai-x.y'
+      version:
+        description: 'Version to update in Tekton files (e.g., v2.16.0)'
+        required: true
+        default: 'vx.y.z'
+
+jobs:
+  copy-tekton-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Automation Repository
+        uses: actions/checkout@v3
+        with:
+          path: automation_repo
+          # Use GITHUB_TOKEN for the initial checkout
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: getsentry/action-github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APPP_KEY }}
+
+      - name: Process Repositories
+        run: |
+          set -e
+          # Use the generated token from the previous step
+          export GIT_TOKEN="${{ steps.app-token.outputs.token }}"
+
+          SOURCE_BRANCH=${{ github.event.inputs.source_branch }}
+          TARGET_BRANCH=${{ github.event.inputs.target_branch }}
+          VERSION=${{ github.event.inputs.version }}
+
+          # Read each repository URL from repos.txt
+          while IFS= read -r repo_url; do
+            if [[ -z "$repo_url" || "$repo_url" =~ ^# ]]; then
+              continue
+            fi
+
+            repo_name=$(basename "$repo_url" .git)
+            echo "Processing repository: $repo_url"
+
+            # Clone the repository using the app token
+            git clone "https://${{ steps.app-token.outputs.token }}@github.com/${repo_url}"
+            cd "$repo_name"
+
+            # Existing script logic continues...
+          done < automation_repo/repos.txt

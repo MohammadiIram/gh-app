@@ -55,8 +55,8 @@ jobs:
             echo "Processing repository: $repo_url"
 
             # Clone the repository using the app token
-            git clone "https://${{ steps.app-token.outputs.token }}@github.com/${repo_url}"
-            cd "$repo_name"
+             git clone "https://${GIT_TOKEN}@${repo_url#https://}"
+             cd "$repo_name"
 
             # Existing script logic continues...
           done < automation_repo/repos.txt

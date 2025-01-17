@@ -46,10 +46,10 @@ jobs:
           sudo apt-get install -y git
 
       - name: Process Repositories
+        env:
+          GIT_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
         run: |
           set -e  # Exit immediately if a command exits with a non-zero status
-
-          export GIT_TOKEN="${{ steps.app-token.outputs.token }}"
 
           SOURCE_BRANCH=${{ github.event.inputs.source_branch }}
           TARGET_BRANCH=${{ github.event.inputs.target_branch }}
@@ -80,8 +80,8 @@ jobs:
             git clone "$repo_url"
             cd "$repo_name" || { echo "Failed to enter directory $repo_name"; exit 1; }
 
-            # Configure Git for authentication
-            git config --global url."https://${{GIT_TOKEN}}@github.com/".insteadOf "https://github.com/"
+            # Configure Git to use the App token for authentication
+            git config --global url."https://${GIT_TOKEN}@github.com/".insteadOf "https://github.com/"
 
             # Check out the source branch
             if ! git checkout "$SOURCE_BRANCH"; then

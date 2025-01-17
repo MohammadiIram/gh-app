@@ -33,7 +33,7 @@ jobs:
         uses: getsentry/action-github-app-token@v2
         with:
           app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APPP_KEY }}
+          private_key: ${{ secrets.APP_KEY }}
 
       - name: Process Repositories
         run: |

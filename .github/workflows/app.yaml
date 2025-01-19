@@ -48,7 +48,7 @@ jobs:
 
       - name: Process Repositories
         env:
-          GIT_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
+          GIT_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -e  # Exit immediately if a command exits with a non-zero status
 
